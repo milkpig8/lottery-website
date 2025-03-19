@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>威力彩隨機號碼產生器</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: radial-gradient(circle, #1e3a8a, #6a0dad);
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        .button {
+            background: gold;
+            color: black;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+            margin: 10px;
+        }
+        .button:hover { background: orange; }
+        .button:active { transform: scale(0.95); }
+        .numbers {
+            margin-top: 20px;
+            font-size: 24px;
+            display: flex;
+            gap: 10px;
+        }
+        .number {
+            background: lightgreen;
+            padding: 15px;
+            border-radius: 50%;
+            font-weight: bold;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 40px;
+            opacity: 1;
+            transform: scale(1);
+            position: relative;
+            animation: spin 2s linear;
+        }
+        .special {
+            background: red;
+            color: white;
+        }
+        .hidden { display: none; }
+        .congrats {
+            margin-top: 20px;
+            font-size: 28px;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+        .coin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: gold;
+            border-radius: 50%;
+            animation: fall 4s linear;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(1.5); opacity: 1; }
+            100% { transform: rotate(720deg) scale(1); opacity: 1; }
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100px); opacity: 1; }
+            100% { transform: translateY(500px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1>威力彩隨機號碼產生器</h1>
+    <button class="button" id="generate" onclick="generateNumbers()">產生號碼</button>
+    <div id="number-container" class="numbers"></div>
+    <div id="congrats" class="congrats hidden">🎉 祝您中獎！沒中怎麼不找找自己的問題 🎉</div>
+    <button class="button hidden" id="retry" onclick="generateNumbers()">再來一次</button>
+    
+    <script>
+        function generateNumbers() {
+            document.getElementById("number-container").innerHTML = "";
+            document.getElementById("congrats").classList.add("hidden");
+            document.getElementById("retry").classList.add("hidden");
+            document.getElementById("generate").classList.add("hidden");
+            
+            let container = document.getElementById("number-container");
+            for (let i = 0; i < 7; i++) {
+                let span = document.createElement("span");
+                span.classList.add("number");
+                span.textContent = "?";
+                container.appendChild(span);
+            }
+            
+            let coinInterval = setInterval(dropCoins, 300);
+            setTimeout(() => clearInterval(coinInterval), 14000);
+            
+            setTimeout(() => {
+                let numbers = new Set();
+                while (numbers.size < 6) {
+                    numbers.add(Math.floor(Math.random() * 38) + 1);
+                }
+                let special = Math.floor(Math.random() * 8) + 1;
+                let sortedNumbers = [...numbers].sort((a, b) => a - b);
+                
+                let spans = document.querySelectorAll(".number");
+                sortedNumbers.forEach((num, index) => {
+                    setTimeout(() => {
+                        spans[index].textContent = num;
+                    }, (index + 1) * 2000);
+                });
+                
+                setTimeout(() => {
+                    let specialSpan = spans[6];
+                    specialSpan.classList.add("special");
+                    specialSpan.textContent = special;
+                }, sortedNumbers.length * 2000);
+                
+                setTimeout(() => {
+                    document.getElementById("congrats").classList.remove("hidden");
+                    document.getElementById("retry").classList.remove("hidden");
+                }, sortedNumbers.length * 2000);
+            }, 4000);
+        }
+        
+        function dropCoins() {
+            let coin = document.createElement("div");
+            coin.classList.add("coin");
+            coin.style.left = Math.random() * window.innerWidth + "px";
+            document.body.appendChild(coin);
+            setTimeout(() => { coin.remove(); }, 4000);
+        }
+    </script>
+</body>
+</html>
